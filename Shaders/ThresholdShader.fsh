@@ -22,7 +22,7 @@ vec4 maskPixel(vec4 pixelColor, vec4 maskColor)
     
     // If color difference is larger than threshold, return black.
     //calculatedColor =  (d > threshold)  ?  vec4(0.0)  :  vec4(1.0);
-	calculatedColor = vec4(threshold*pixelColor.r, 0.0, 0.0, 1.0);
+	calculatedColor = vec4(myFloater*pixelColor.r, 0.0, 0.0, 1.0);
 
 	//Multiply color by texture
 	return calculatedColor;
