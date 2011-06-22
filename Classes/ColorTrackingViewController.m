@@ -196,7 +196,7 @@ enum {
 	glUniform1i(uniforms[UNIFORM_VIDEOFRAME], 0);	
 	glUniform4f(uniforms[UNIFORM_INPUTCOLOR], thresholdColor[0], thresholdColor[1], thresholdColor[2], 1.0f);
 	glUniform1f(uniforms[UNIFORM_THRESHOLD], thresholdSensitivity);
-	glUniform1f(uniforms[UNIFORM_FLOATER], myFloater);
+	glUniform1f(uniforms[UNIFORM_FLOATER], myFloater += 0.01);
 		
 	// Update attribute values.
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
@@ -300,10 +300,12 @@ enum {
     }
     
     // Get uniform locations.
-    uniforms[UNIFORM_VIDEOFRAME] = glGetUniformLocation(*programPointer, "videoFrame");
-    uniforms[UNIFORM_INPUTCOLOR] = glGetUniformLocation(*programPointer, "inputColor");
-    uniforms[UNIFORM_THRESHOLD] = glGetUniformLocation(*programPointer, "threshold");
-	uniforms[UNIFORM_FLOATER] = glGetUniformLocation(*programPointer, "myFloater");
+	if ([fragmentShaderName isEqualToString:@"ThresholdShader"]){
+		uniforms[UNIFORM_VIDEOFRAME] = glGetUniformLocation(*programPointer, "videoFrame");
+		uniforms[UNIFORM_INPUTCOLOR] = glGetUniformLocation(*programPointer, "inputColor");
+		uniforms[UNIFORM_THRESHOLD] = glGetUniformLocation(*programPointer, "threshold");
+		uniforms[UNIFORM_FLOATER] = glGetUniformLocation(*programPointer, "myFloater");
+	}
 	
     
     // Release vertex and fragment shaders.
