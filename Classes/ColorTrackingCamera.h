@@ -20,6 +20,7 @@
 	AVCaptureSession *captureSession;
 	AVCaptureDeviceInput *videoInput;
 	AVCaptureVideoDataOutput *videoOutput;
+	AVCaptureDevice *backFacingCamera;
 }
 
 @property(nonatomic, assign) id<ColorTrackingCameraDelegate> delegate;

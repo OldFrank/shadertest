@@ -10,7 +10,6 @@
 
 #import "ColorTrackingCamera.h"
 
-
 @implementation ColorTrackingCamera
 
 #pragma mark -
@@ -22,7 +21,7 @@
 		return nil;
 	
 	// Grab the back-facing camera
-	AVCaptureDevice *backFacingCamera = nil;
+//	AVCaptureDevice *backFacingCamera = nil;
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
 	for (AVCaptureDevice *device in devices) 
 	{
@@ -32,11 +31,43 @@
 		}
 	}
 	
+	NSError *error = nil;
+	
+    if ([backFacingCamera lockForConfiguration:&error]) {
+		// location should be CGPoint
+		// [backFacingCamera setFocusPointOfInterest:location];
+		[backFacingCamera setFocusMode:AVCaptureFocusModeAutoFocus];
+
+//		[backFacingCamera	addObserver:self
+//							forKeyPath:@"adjustingWhiteBalance"
+//							options:NSKeyValueObservingOptionNew
+//							context:nil];
+		
+		[backFacingCamera	addObserver:self
+						   forKeyPath:@"adjustingExposure"
+							  options:NSKeyValueObservingOptionNew
+							  context:nil];
+		
+		
+		//[backFacingCamera setExposurePointOfInterest:location];
+		[backFacingCamera setWhiteBalanceMode:AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance];
+		[backFacingCamera setExposureMode:AVCaptureExposureModeContinuousAutoExposure]; 
+		//[backFacingCamera setExposureMode:AVCaptureExposureModeLocked];
+		if ([backFacingCamera isTorchModeSupported:AVCaptureTorchModeOn]){
+			[backFacingCamera setTorchMode:AVCaptureTorchModeOn];
+		}
+		[backFacingCamera unlockForConfiguration];
+    }
+    else {
+        // Respond to the failure as appropriate.
+	}
+	NSLog(@"SET AVCaptureExposureModeContinuousAutoExposure!!!!");
+
+	
 	// Create the capture session
 	captureSession = [[AVCaptureSession alloc] init];
 	
 	// Add the video input	
-	NSError *error = nil;
 	videoInput = [[[AVCaptureDeviceInput alloc] initWithDevice:backFacingCamera error:&error] autorelease];
 	if ([captureSession canAddInput:videoInput]) 
 	{
@@ -83,6 +114,8 @@
 	[videoPreviewLayer release];
 	[videoOutput release];
 	[videoInput release];
+	[backFacingCamera release];
+	
 	[super dealloc];
 }
 
@@ -117,5 +150,47 @@
 	
 	return videoPreviewLayer;
 }
+
+-(void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*) change context:(void*)context{
+//	if ([change objectForKey:NSKeyValueChangeNewKey] == NO) {
+//		[backFacingCamera removeObserver:self forKeyPath:@"adjustingExposure"];
+//	}
+	if ([keyPath isEqual:@"adjustingExposure"]){
+		if ([object isAdjustingExposure] == NO) {
+			NSLog(@"EXPOSURE ADJUSTMENT STOPPED!!!!");
+			//NSError *error = nil;
+			//if ([backFacingCamera lockForConfiguration:&error]) { 
+				//[backFacingCamera removeObserver:self forKeyPath:@"adjustingWhiteBalance"];
+				
+				//[backFacingCamera removeObserver:self forKeyPath:@"adjustingExposure"];
+				[object removeObserver:self forKeyPath:@"adjustingExposure"];
+				//[obect setExposureMode:AVCaptureExposureModeLocked];
+				[self performSelector:@selector(lockCameraSettings) withObject:nil afterDelay:0.001];
+				
+				//[backFacingCamera setExposureMode:AVCaptureExposureModeLocked];
+	//			[backFacingCamera setExposureMode:AVCaptureWhiteBalanceModeLocked];
+				//[backFacingCamera setTorchMode:AVCaptureTorchModeOff];
+				//[backFacingCamera unlockForConfiguration];
+			//} else {
+				//
+			//}
+		}
+	}
+	
+//    [super observeValueForKeyPath:keyPath
+//						 ofObject:object
+//						   change:change
+//						  context:context];
+}
+
+-(void)lockCameraSettings{
+	NSError *error = nil;
+	if ([backFacingCamera lockForConfiguration:&error]) { 
+		[backFacingCamera setExposureMode:AVCaptureExposureModeLocked];
+		[backFacingCamera setExposureMode:AVCaptureWhiteBalanceModeLocked];
+		[backFacingCamera unlockForConfiguration];
+	}
+}
+
 
 @end

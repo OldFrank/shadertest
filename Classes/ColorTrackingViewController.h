@@ -9,10 +9,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#include <AudioToolbox/AudioToolbox.h>
 #import "ColorTrackingCamera.h"
 #import "ColorTrackingGLView.h"
 
-typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, OBJECT_TRACKING} ColorTrackingDisplayMode;
+//typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, OBJECT_TRACKING} ColorTrackingDisplayMode;
+typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, CALIBRATION} ColorTrackingDisplayMode;
 
 
 @interface ColorTrackingViewController : UIViewController <ColorTrackingCameraDelegate>
@@ -21,6 +23,8 @@ typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, OB
 	UIScreen *screenForDisplay;
 	ColorTrackingGLView *glView;
 	CALayer *trackingDot;
+	
+	
 	
 	ColorTrackingDisplayMode displayMode;
 	
@@ -34,9 +38,15 @@ typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, OB
 	GLuint videoFrameTexture;
 	
 	GLubyte *rawPositionPixels;
+	
+	CFURLRef		soundFileURLRef;
+	SystemSoundID	soundFileObject;
 }
 
 @property(readonly) ColorTrackingGLView *glView;
+
+@property (readwrite)	CFURLRef		soundFileURLRef;
+@property (readonly)	SystemSoundID	soundFileObject;
 
 // Initialization and teardown
 - (id)initWithScreen:(UIScreen *)newScreenForDisplay;

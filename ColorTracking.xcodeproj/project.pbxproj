@@ -13,6 +13,8 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* ColorTrackingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* ColorTrackingViewController.m */; };
+		943C628F13B5792300EE8CD0 /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 943C628E13B5792300EE8CD0 /* beep.wav */; };
+		94EEBD9313B5676600643739 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94EEBD9213B5676600643739 /* AudioToolbox.framework */; };
 		BC3F798A125EC40400987A60 /* ColorTrackingGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3F7989125EC40400987A60 /* ColorTrackingGLView.m */; };
 		BC3F7BB51260FBAB00987A60 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC3F7BB41260FBAB00987A60 /* OpenGLES.framework */; };
 		BC3F7BB71260FBB700987A60 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC3F7BB61260FBB700987A60 /* QuartzCore.framework */; };
@@ -40,6 +42,8 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* ColorTracking_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorTracking_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* ColorTracking-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ColorTracking-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		943C628E13B5792300EE8CD0 /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
+		94EEBD9213B5676600643739 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		BC3F7988125EC40400987A60 /* ColorTrackingGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorTrackingGLView.h; sourceTree = "<group>"; };
 		BC3F7989125EC40400987A60 /* ColorTrackingGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorTrackingGLView.m; sourceTree = "<group>"; };
 		BC3F7BB41260FBAB00987A60 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -70,6 +74,7 @@
 				BC3F7CEC126115C200987A60 /* AVFoundation.framework in Frameworks */,
 				BC3F7DA612612EF500987A60 /* CoreVideo.framework in Frameworks */,
 				BC3F7DA812612EFD00987A60 /* CoreMedia.framework in Frameworks */,
+				94EEBD9313B5676600643739 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,6 +129,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				943C628D13B5792300EE8CD0 /* audio */,
 				8D1107310486CEB800E47090 /* ColorTracking-Info.plist */,
 			);
 			name = Resources;
@@ -140,8 +146,17 @@
 				BC3F7CEB126115C200987A60 /* AVFoundation.framework */,
 				BC3F7DA512612EF500987A60 /* CoreVideo.framework */,
 				BC3F7DA712612EFD00987A60 /* CoreMedia.framework */,
+				94EEBD9213B5676600643739 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		943C628D13B5792300EE8CD0 /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				943C628E13B5792300EE8CD0 /* beep.wav */,
+			);
+			path = audio;
 			sourceTree = "<group>";
 		};
 		BC3F7FBE126296EF00987A60 /* Shaders */ = {
@@ -212,6 +227,7 @@
 				BC3F80DB1262BD5400987A60 /* ThresholdShader.vsh in Resources */,
 				BC3F813C1262C8E100987A60 /* PositionShader.fsh in Resources */,
 				BC3F813D1262C8E100987A60 /* PositionShader.vsh in Resources */,
+				943C628F13B5792300EE8CD0 /* beep.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

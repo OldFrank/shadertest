@@ -29,6 +29,9 @@ enum {
 
 @implementation ColorTrackingViewController
 
+@synthesize soundFileURLRef;
+@synthesize soundFileObject;
+
 #define DEBUG
 
 #pragma mark -
@@ -80,7 +83,7 @@ enum {
 	[self loadVertexShader:@"PositionShader" fragmentShader:@"PositionShader" forProgram:&positionProgram];
 
 	// Set up the toolbar at the bottom of the screen
-	UISegmentedControl *displayModeControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Video", nil), NSLocalizedString(@"Threshold", nil), NSLocalizedString(@"Position", nil), NSLocalizedString(@"Track", nil), nil]];
+	UISegmentedControl *displayModeControl = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Video", nil), NSLocalizedString(@"Threshold", nil), NSLocalizedString(@"Position", nil), NSLocalizedString(@"Calibrate", nil), nil]];
 	displayModeControl.segmentedControlStyle = UISegmentedControlStyleBar;
 	displayModeControl.selectedSegmentIndex = 0;
 	[displayModeControl addTarget:self action:@selector(handleSwitchOfDisplayMode:) forControlEvents:UIControlEventValueChanged];
@@ -119,6 +122,21 @@ enum {
 	camera = [[ColorTrackingCamera alloc] init];
 	camera.delegate = self;
 	[self cameraHasConnected];
+	
+}
+
+- (void) viewDidLoad {
+	
+    [super viewDidLoad];
+	
+	NSURL *beepSound   = [[NSBundle mainBundle] URLForResource: @"beep"
+                                                withExtension: @"wav"];
+	
+    // Store the URL as a CFURLRef instance
+    self.soundFileURLRef = (CFURLRef) [beepSound retain];
+	
+    // Create a system sound object representing the sound file.
+    AudioServicesCreateSystemSoundID(soundFileURLRef, &soundFileObject);
 }
 
 - (void)didReceiveMemoryWarning 
@@ -182,11 +200,11 @@ enum {
 			[glView setDisplayFramebuffer];
 			glUseProgram(positionProgram);			
 		}; break;
-		case OBJECT_TRACKING:
-		{
-			[glView setPositionThresholdFramebuffer];
-			glUseProgram(positionProgram);			
-		}; break;
+//		case CALIBRATION:
+//		{
+//			[glView setPositionThresholdFramebuffer];
+//			glUseProgram(positionProgram);			
+//		}; break;
 	}		
 
 	glActiveTexture(GL_TEXTURE0);
@@ -196,7 +214,7 @@ enum {
 	glUniform1i(uniforms[UNIFORM_VIDEOFRAME], 0);	
 	glUniform4f(uniforms[UNIFORM_INPUTCOLOR], thresholdColor[0], thresholdColor[1], thresholdColor[2], 1.0f);
 	glUniform1f(uniforms[UNIFORM_THRESHOLD], thresholdSensitivity);
-	glUniform1f(uniforms[UNIFORM_FLOATER], myFloater += 0.01);
+	glUniform1f(uniforms[UNIFORM_FLOATER], myFloater += 0.05);
 		
 	// Update attribute values.
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
@@ -206,32 +224,32 @@ enum {
 	
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	
-	if (displayMode == OBJECT_TRACKING)
-	{
-//		glGenerateMipmap(GL_TEXTURE_2D);
-		
-		
-		// Grab the current position of the object from the offscreen framebuffer
-		glReadPixels(0, 0, FBO_WIDTH, FBO_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, rawPositionPixels);
-		CGPoint currentTrackingLocation = [self centroidFromTexture:rawPositionPixels];		
-		trackingDot.position = CGPointMake(currentTrackingLocation.x * glView.bounds.size.width, currentTrackingLocation.y * glView.bounds.size.height);
-		
-		[glView setDisplayFramebuffer];
-		glUseProgram(directDisplayProgram);
-
-		// Grab the previously rendered texture and feed that into the next level of processing
-//		glActiveTexture(GL_TEXTURE0);
-//		glBindTexture(GL_TEXTURE_2D, glView.positionRenderTexture);
-//		glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
-//		glEnableVertexAttribArray(ATTRIB_VERTEX);
-//		glVertexAttribPointer(ATTRIB_TEXTUREPOSITON, 2, GL_FLOAT, 0, 0, passthroughTextureVertices);
-//		glEnableVertexAttribArray(ATTRIB_TEXTUREPOSITON);
-
-	    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);		
-	}
-	else
-	{
-	}
+//	if (displayMode == CALIBRATION)
+//	{
+////		glGenerateMipmap(GL_TEXTURE_2D);
+//		
+//		
+//		// Grab the current position of the object from the offscreen framebuffer
+//		glReadPixels(0, 0, FBO_WIDTH, FBO_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, rawPositionPixels);
+//		CGPoint currentTrackingLocation = [self centroidFromTexture:rawPositionPixels];		
+//		trackingDot.position = CGPointMake(currentTrackingLocation.x * glView.bounds.size.width, currentTrackingLocation.y * glView.bounds.size.height);
+//		
+//		[glView setDisplayFramebuffer];
+//		glUseProgram(directDisplayProgram);
+//
+//		// Grab the previously rendered texture and feed that into the next level of processing
+////		glActiveTexture(GL_TEXTURE0);
+////		glBindTexture(GL_TEXTURE_2D, glView.positionRenderTexture);
+////		glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);
+////		glEnableVertexAttribArray(ATTRIB_VERTEX);
+////		glVertexAttribPointer(ATTRIB_TEXTUREPOSITON, 2, GL_FLOAT, 0, 0, passthroughTextureVertices);
+////		glEnableVertexAttribArray(ATTRIB_TEXTUREPOSITON);
+//
+//	    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);		
+//	}
+//	else
+//	{
+//	}
     
     [glView presentFramebuffer];
 }
@@ -412,9 +430,13 @@ enum {
 {
 	displayMode = [sender selectedSegmentIndex];
 	
-	if (displayMode == OBJECT_TRACKING)
+	//if (displayMode == CALIBRATION)
+	if (displayMode == CALIBRATION)
 	{
-		trackingDot.opacity = 1.0f;
+		NSLog(@"Trying to play sound!!");
+		AudioServicesPlayAlertSound (soundFileObject);
+		//trackingDot.opacity = 1.0f;
+		
 	}
 	else
 	{
@@ -455,26 +477,26 @@ enum {
 	int bufferHeight = CVPixelBufferGetHeight(cameraFrame);
 	int bufferWidth = CVPixelBufferGetWidth(cameraFrame);
 	
-	if (shouldReplaceThresholdColor)
-	{
-		// Extract a color at the touch point from the raw camera data
-		int scaledVideoPointX = round((self.view.bounds.size.width - currentTouchPoint.x) * (CGFloat)bufferHeight / self.view.bounds.size.width);
-		int scaledVideoPointY = round(currentTouchPoint.y * (CGFloat)bufferWidth / self.view.bounds.size.height);
-		
-		unsigned char *rowBase = (unsigned char *)CVPixelBufferGetBaseAddress(cameraFrame);
-		int bytesPerRow = CVPixelBufferGetBytesPerRow(cameraFrame);
-		unsigned char *pixel = rowBase + (scaledVideoPointX * bytesPerRow) + (scaledVideoPointY * 4);
-		
-		thresholdColor[0] = (float)pixel[2] / 255.0;
-		thresholdColor[1] = (float)pixel[1] / 255.0;
-		thresholdColor[2] = (float)pixel[0] / 255.0;
-		
-		[[NSUserDefaults standardUserDefaults] setFloat:thresholdColor[0] forKey:@"thresholdColorR"];
-		[[NSUserDefaults standardUserDefaults] setFloat:thresholdColor[1] forKey:@"thresholdColorG"];
-		[[NSUserDefaults standardUserDefaults] setFloat:thresholdColor[2] forKey:@"thresholdColorB"];
-
-		shouldReplaceThresholdColor = NO;
-	}
+//	if (shouldReplaceThresholdColor)
+//	{
+//		// Extract a color at the touch point from the raw camera data
+//		int scaledVideoPointX = round((self.view.bounds.size.width - currentTouchPoint.x) * (CGFloat)bufferHeight / self.view.bounds.size.width);
+//		int scaledVideoPointY = round(currentTouchPoint.y * (CGFloat)bufferWidth / self.view.bounds.size.height);
+//		
+//		unsigned char *rowBase = (unsigned char *)CVPixelBufferGetBaseAddress(cameraFrame);
+//		int bytesPerRow = CVPixelBufferGetBytesPerRow(cameraFrame);
+//		unsigned char *pixel = rowBase + (scaledVideoPointX * bytesPerRow) + (scaledVideoPointY * 4);
+//		
+//		thresholdColor[0] = (float)pixel[2] / 255.0;
+//		thresholdColor[1] = (float)pixel[1] / 255.0;
+//		thresholdColor[2] = (float)pixel[0] / 255.0;
+//		
+//		[[NSUserDefaults standardUserDefaults] setFloat:thresholdColor[0] forKey:@"thresholdColorR"];
+//		[[NSUserDefaults standardUserDefaults] setFloat:thresholdColor[1] forKey:@"thresholdColorG"];
+//		[[NSUserDefaults standardUserDefaults] setFloat:thresholdColor[2] forKey:@"thresholdColorB"];
+//
+//		shouldReplaceThresholdColor = NO;
+//	}
 
 	// Create a new texture from the camera frame data, display that using the shaders
 	glGenTextures(1, &videoFrameTexture);
