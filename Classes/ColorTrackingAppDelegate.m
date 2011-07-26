@@ -14,7 +14,7 @@
 @implementation ColorTrackingAppDelegate
 
 @synthesize window;
-@synthesize viewController;
+@synthesize colorTrackingViewController;
 
 
 #pragma mark -

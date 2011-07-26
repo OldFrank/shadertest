@@ -9,6 +9,9 @@
 //
 
 #import "ColorTrackingCamera.h"
+#import "ColorTrackingAppDelegate.h"
+#import "ColorTrackingViewController.h"
+
 
 @implementation ColorTrackingCamera
 
@@ -42,11 +45,16 @@
 //							forKeyPath:@"adjustingWhiteBalance"
 //							options:NSKeyValueObservingOptionNew
 //							context:nil];
+
+		ColorTrackingAppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+		ColorTrackingViewController *viewController = [appDelegate colorTrackingViewController];
+		UIView *overlay = [viewController overlay];
+		[overlay setHidden:NO];
 		
 		[backFacingCamera	addObserver:self
-						   forKeyPath:@"adjustingExposure"
-							  options:NSKeyValueObservingOptionNew
-							  context:nil];
+						    forKeyPath:@"adjustingExposure"
+							options:NSKeyValueObservingOptionNew
+							context:nil];
 		
 		
 		//[backFacingCamera setExposurePointOfInterest:location];
@@ -158,22 +166,18 @@
 	if ([keyPath isEqual:@"adjustingExposure"]){
 		if ([object isAdjustingExposure] == NO) {
 			NSLog(@"EXPOSURE ADJUSTMENT STOPPED!!!!");
-			//NSError *error = nil;
-			//if ([backFacingCamera lockForConfiguration:&error]) { 
-				//[backFacingCamera removeObserver:self forKeyPath:@"adjustingWhiteBalance"];
 				
-				//[backFacingCamera removeObserver:self forKeyPath:@"adjustingExposure"];
-				[object removeObserver:self forKeyPath:@"adjustingExposure"];
-				//[obect setExposureMode:AVCaptureExposureModeLocked];
-				[self performSelector:@selector(lockCameraSettings) withObject:nil afterDelay:0.001];
-				
-				//[backFacingCamera setExposureMode:AVCaptureExposureModeLocked];
-	//			[backFacingCamera setExposureMode:AVCaptureWhiteBalanceModeLocked];
-				//[backFacingCamera setTorchMode:AVCaptureTorchModeOff];
-				//[backFacingCamera unlockForConfiguration];
-			//} else {
-				//
-			//}
+			[object removeObserver:self forKeyPath:@"adjustingExposure"];
+		
+			ColorTrackingAppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+			ColorTrackingViewController *viewController = [appDelegate colorTrackingViewController];
+			UIView *overlay = [viewController overlay];
+			[overlay setHidden:YES];
+			
+			[self performSelector:@selector(lockCameraSettings) withObject:nil afterDelay:0.001];
+		
+			NSLog(@"Trying to play sound!!");
+			AudioServicesPlayAlertSound ([viewController soundFileObject]);
 		}
 	}
 	
@@ -190,6 +194,21 @@
 		[backFacingCamera setExposureMode:AVCaptureWhiteBalanceModeLocked];
 		[backFacingCamera unlockForConfiguration];
 	}
+}
+
+- (void)startObserver{
+	
+	NSError *error = nil;
+	if ([backFacingCamera lockForConfiguration:&error]) {
+		[backFacingCamera setWhiteBalanceMode:AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance];
+		[backFacingCamera setExposureMode:AVCaptureExposureModeContinuousAutoExposure]; 
+		[backFacingCamera unlockForConfiguration];
+	}
+	
+	[backFacingCamera	addObserver:self
+					    forKeyPath:@"adjustingExposure"
+						options:NSKeyValueObservingOptionNew
+						context:nil];
 }
 
 

@@ -12,6 +12,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
 
+@class ColorTrackingAppDelegate;
+@class ColorTrackingViewController;
+
 @protocol ColorTrackingCameraDelegate;
 
 @interface ColorTrackingCamera : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
@@ -25,6 +28,8 @@
 
 @property(nonatomic, assign) id<ColorTrackingCameraDelegate> delegate;
 @property(readonly) AVCaptureVideoPreviewLayer *videoPreviewLayer;
+
+- (void)startObserver;
 
 @end
 

@@ -29,12 +29,30 @@ enum {
 
 @implementation ColorTrackingViewController
 
+@synthesize overlay;
 @synthesize soundFileURLRef;
 @synthesize soundFileObject;
 
 #define DEBUG
 
 #pragma mark -
+
+- (UILabel *)overlay
+{
+	if (! overlay)
+	{
+		// set up the overlay UIView for the first time
+		self.overlay = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 200, 75)];
+		self.overlay.backgroundColor = [UIColor clearColor];
+		self.overlay.text = @"Calibrating...";
+		self.overlay.textColor = [UIColor redColor];
+		self.overlay.font = [UIFont fontWithName:@"Helvetica" size:35.0];
+		self.overlay.textAlignment = UITextAlignmentCenter;
+		self.overlay.hidden = NO;
+	}
+	return overlay;
+}
+
 #pragma mark Initialization and teardown
 
 - (id)initWithScreen:(UIScreen *)newScreenForDisplay;
@@ -119,6 +137,8 @@ enum {
 	trackingDot.position = CGPointMake(100.0f, 100.0f);
 	trackingDot.opacity = 0.0f;
 	
+	[self.view addSubview:self.overlay];
+	
 	camera = [[ColorTrackingCamera alloc] init];
 	camera.delegate = self;
 	[self cameraHasConnected];
@@ -137,6 +157,8 @@ enum {
 	
     // Create a system sound object representing the sound file.
     AudioServicesCreateSystemSoundID(soundFileURLRef, &soundFileObject);
+	//AudioServicesPlayAlertSound (soundFileObject);
+
 }
 
 - (void)didReceiveMemoryWarning 
@@ -430,11 +452,12 @@ enum {
 {
 	displayMode = [sender selectedSegmentIndex];
 	
-	//if (displayMode == CALIBRATION)
 	if (displayMode == CALIBRATION)
 	{
-		NSLog(@"Trying to play sound!!");
-		AudioServicesPlayAlertSound (soundFileObject);
+
+		[camera startObserver];
+		[[self overlay] setHidden: NO];
+		
 		//trackingDot.opacity = 1.0f;
 		
 	}

@@ -23,9 +23,7 @@ typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, CA
 	UIScreen *screenForDisplay;
 	ColorTrackingGLView *glView;
 	CALayer *trackingDot;
-	
-	
-	
+		
 	ColorTrackingDisplayMode displayMode;
 	
 	BOOL shouldReplaceThresholdColor;
@@ -44,6 +42,8 @@ typedef enum { PASSTHROUGH_VIDEO, SIMPLE_THRESHOLDING, POSITION_THRESHOLDING, CA
 }
 
 @property(readonly) ColorTrackingGLView *glView;
+
+@property (nonatomic, retain) UILabel *overlay;
 
 @property (readwrite)	CFURLRef		soundFileURLRef;
 @property (readonly)	SystemSoundID	soundFileObject;
