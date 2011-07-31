@@ -10,6 +10,9 @@
 
 #import "ColorTrackingViewController.h"
 
+#define ARC4RANDOM_MAX      0x100000000
+
+
 // Uniform index.
 enum {
     UNIFORM_VIDEOFRAME,
@@ -178,7 +181,16 @@ enum {
 #pragma mark OpenGL ES 2.0 rendering methods
 
 - (void)drawFrame
-{    
+{   
+	
+	MPMoviePlayerController *movie = [[MPMoviePlayerController alloc]
+									  initWithContentURL [NSURL URLWithString:@"myMovie.mp4"]];
+	UIImage *singleFrameImage = [movie thumbnailImageAtTime:10 timeOption:MPMovieTimeOptionExact];
+	[movie thum
+	
+	//myFloater = ((double)arc4random() / ARC4RANDOM_MAX);
+	//NSLog(@"rand() = %f", myFloater);
+
     // Replace the implementation of this method to do your own custom drawing.
     static const GLfloat squareVertices[] = {
         -1.0f, -1.0f,
@@ -236,7 +248,7 @@ enum {
 	glUniform1i(uniforms[UNIFORM_VIDEOFRAME], 0);	
 	glUniform4f(uniforms[UNIFORM_INPUTCOLOR], thresholdColor[0], thresholdColor[1], thresholdColor[2], 1.0f);
 	glUniform1f(uniforms[UNIFORM_THRESHOLD], thresholdSensitivity);
-	glUniform1f(uniforms[UNIFORM_FLOATER], myFloater += 0.05);
+	glUniform1f(uniforms[UNIFORM_FLOATER], myFloater);
 		
 	// Update attribute values.
 	glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, squareVertices);

@@ -62,7 +62,7 @@
 		[backFacingCamera setExposureMode:AVCaptureExposureModeContinuousAutoExposure]; 
 		//[backFacingCamera setExposureMode:AVCaptureExposureModeLocked];
 		if ([backFacingCamera isTorchModeSupported:AVCaptureTorchModeOn]){
-			[backFacingCamera setTorchMode:AVCaptureTorchModeOn];
+			//[backFacingCamera setTorchMode:AVCaptureTorchModeOn];
 		}
 		[backFacingCamera unlockForConfiguration];
     }
