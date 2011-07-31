@@ -183,10 +183,10 @@ enum {
 - (void)drawFrame
 {   
 	
-	MPMoviePlayerController *movie = [[MPMoviePlayerController alloc]
-									  initWithContentURL [NSURL URLWithString:@"myMovie.mp4"]];
-	UIImage *singleFrameImage = [movie thumbnailImageAtTime:10 timeOption:MPMovieTimeOptionExact];
-	[movie thum
+//	MPMoviePlayerController *movie = [[MPMoviePlayerController alloc]
+//									  initWithContentURL [NSURL URLWithString:@"myMovie.mp4"]];
+//	UIImage *singleFrameImage = [movie thumbnailImageAtTime:10 timeOption:MPMovieTimeOptionExact];
+//	[movie thum
 	
 	//myFloater = ((double)arc4random() / ARC4RANDOM_MAX);
 	//NSLog(@"rand() = %f", myFloater);
